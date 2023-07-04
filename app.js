@@ -1,26 +1,25 @@
 const http = require('http');
-const fs = require('fs')
+
+const rootDir = require('./util/path')
+
 const bodyParsed = require('body-parser')  
 
-const express = require('express')
+const adminPanel = require('./routes/admin')
+const userPanel = require('./routes/shop')
+
+const express = require('express');
+const path = require('path');
 const app = express();
 
 app.use(bodyParsed.urlencoded())
+app.use(express.static(path.join(__dirname,'public')))
 
-app.use('/',(req,res,next) => {
-    console.log("Always Run")
-    next()
-})
-
-app.use("/",(req,res,next) => {
-    console.log("Second Middleware")
-    res.send("Home Page")
-})
-
+app.use('/admin',adminPanel)
+app.use(userPanel)
 
 app.use((req,res,next) => {
-    res.status(404).send('<h2>Page Not Found</h2>')
+    res.status(404).sendFile(path.join(rootDir,'views','404page.html'))
 })
 
 
-app.listen(3000)
+app.listen(3000);
